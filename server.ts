@@ -1,5 +1,4 @@
 process.env.DISABLE_HMR = "true";
-import path from 'path';
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -14,7 +13,7 @@ dotenv.config();
 async function startServer() {
   const app = express();
   const httpServer = createServer(app);
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   // Middleware
   app.use(express.json());
@@ -33,24 +32,22 @@ async function startServer() {
   // Socket.io Setup
   setupSocket(httpServer);
 
-  // Vite Integration for Frontend
-  // if (process.env.NODE_ENV !== 'production') {
-  //   const vite = await createViteServer({
-  //     server: { middlewareMode: true },
-  //     appType: 'spa',
-  //   });
-  //   app.use(vite.middlewares);
-  // } else {
-  //   app.use(express.static('dist'));
-  // }
+  //Vite Integration for Frontend
+ if (process.env.NODE_ENV !== "production") {
+  const { createServer: createViteServer } = await import("vite");
+
+  const vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: "spa",
+  });
+
+  app.use(vite.middlewares);
+} else {
+  app.use(express.static("dist"));
+}
   // Serve frontend separately (local dev)
-const __dirname = new URL('.', import.meta.url).pathname;
-
-// Serve frontend build
-app.use(express.static(path.join(__dirname, "dist")));
-
-app.get("*", (_, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+app.get('/', (_, res) => {
+  res.send('✅ SyncDoc Backend Running');
 });
 
   httpServer.listen(PORT, '0.0.0.0', () => {
