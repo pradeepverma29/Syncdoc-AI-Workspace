@@ -1,4 +1,5 @@
 process.env.DISABLE_HMR = "true";
+import path from 'path';
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -43,8 +44,13 @@ async function startServer() {
   //   app.use(express.static('dist'));
   // }
   // Serve frontend separately (local dev)
-app.get('/', (_, res) => {
-  res.send('✅ SyncDoc Backend Running');
+const __dirname = new URL('.', import.meta.url).pathname;
+
+// Serve frontend build
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("*", (_, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
   httpServer.listen(PORT, '0.0.0.0', () => {
