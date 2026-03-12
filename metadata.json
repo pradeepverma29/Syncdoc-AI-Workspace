@@ -1,0 +1,5 @@
+{
+  "name": "SyncDoc – AI Powered Collaborative Workspace",
+  "description": "A full-stack collaborative editor with real-time sync, RBAC permissions, and Gemini AI features.",
+  "requestFramePermissions": []
+}
